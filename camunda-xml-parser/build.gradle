@@ -7,7 +7,10 @@ plugins {
 group = 'com.valb3r.bpmn.intellij.plugin.camunda.parser'
 
 
-sourceCompatibility = 17
+java {
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+}
 
 repositories {
     mavenCentral()

@@ -6,7 +6,10 @@ plugins {
 
 group = 'com.valb3r.bpmn.intellij.plugin.flowable'
 
-sourceCompatibility = 17
+java {
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+}
 
 repositories {
     mavenCentral()
@@ -53,13 +56,13 @@ intellijPlatform {
     }
 
     patchPluginXml {
-        sinceBuild = "233"
+        sinceBuild = sinceBuildVersion
     }
 
     pluginVerification {
         freeArgs = ["-mute", "TemplateWordInPluginName"]
         ides {
-            ide(intellijPlatformVersion)
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, providers.provider { intellijPlatformVersion })
         }
     }
 }

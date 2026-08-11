@@ -2,7 +2,6 @@ package com.valb3r.bpmn.intellij.plugin.flowable.actions
 
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.ActionUpdateThread
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFile
 import com.valb3r.bpmn.intellij.activiti.plugin.notifications.showNotificationBalloon
@@ -16,7 +15,7 @@ class ViewFlowableBpmnDiagramAction : BaseViewBpmnDiagramAction() {
         get() = "BPMN-Flowable-Diagram"
 
     override fun generateContent(project: Project, file: PsiFile) {
-        val window = ServiceManager.getService(project, FlowableBpmnPluginToolWindowProjectService::class.java).bpmnToolWindow
+        val window = project.getService(FlowableBpmnPluginToolWindowProjectService::class.java).bpmnToolWindow
         window.hackFixForMacOsScrollbars()
         window.openFileAndRender(file, BpmnActionContext(project))
     }

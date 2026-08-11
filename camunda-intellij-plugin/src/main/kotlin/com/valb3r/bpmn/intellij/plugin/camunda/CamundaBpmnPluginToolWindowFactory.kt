@@ -1,7 +1,7 @@
 package com.valb3r.bpmn.intellij.plugin.camunda
 
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
@@ -29,8 +29,8 @@ class CamundaBpmnPluginToolWindowFactory: ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         log.info("Creating tool window content")
-        currentSettingsStateProvider.set { ServiceManager.getService(CamundaBpmnPluginSettingsState::class.java) }
-        currentAdvertisementStateProvider.set { ServiceManager.getService(CamundaAdvertisementState::class.java) }
+        currentSettingsStateProvider.set { ApplicationManager.getApplication().getService(CamundaBpmnPluginSettingsState::class.java) }
+        currentAdvertisementStateProvider.set { ApplicationManager.getApplication().getService(CamundaAdvertisementState::class.java) }
 
         val bpmnWindow = BpmnPluginToolWindow(
             project,
@@ -47,7 +47,7 @@ class CamundaBpmnPluginToolWindowFactory: ToolWindowFactory {
         }
 
         // register the call graph tool window as a project service, so it can be accessed by editor menu actions.
-        val windowService = ServiceManager.getService(project, CamundaBpmnPluginToolWindowProjectService::class.java)
+        val windowService = project.getService(CamundaBpmnPluginToolWindowProjectService::class.java)
         windowService.bpmnToolWindow = bpmnWindow
 
         // register the tool window content

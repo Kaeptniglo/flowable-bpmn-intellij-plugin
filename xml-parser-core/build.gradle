@@ -5,7 +5,10 @@ plugins {
 
 group = 'com.valb3r.bpmn.intellij.plugin.bpmn.parser.core'
 
-sourceCompatibility = 17
+java {
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+}
 
 repositories {
     mavenCentral()

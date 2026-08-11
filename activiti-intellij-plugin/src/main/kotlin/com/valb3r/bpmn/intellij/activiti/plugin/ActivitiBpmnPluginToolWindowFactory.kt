@@ -1,7 +1,7 @@
 package com.valb3r.bpmn.intellij.activiti.plugin
 
 import com.intellij.notification.NotificationType
-import com.intellij.openapi.components.ServiceManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -33,8 +33,8 @@ class ActivitiBpmnPluginToolWindowFactory: ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         log.info("Creating tool window content")
-        currentSettingsStateProvider.set { ServiceManager.getService(ActivitiBpmnPluginSettingsState::class.java) }
-        currentAdvertisementStateProvider.set { ServiceManager.getService(ActivitiAdvertisementState::class.java) }
+        currentSettingsStateProvider.set { ApplicationManager.getApplication().getService(ActivitiBpmnPluginSettingsState::class.java) }
+        currentAdvertisementStateProvider.set { ApplicationManager.getApplication().getService(ActivitiAdvertisementState::class.java) }
 
         val bpmnWindow = BpmnPluginToolWindow(
             project,
@@ -56,7 +56,7 @@ class ActivitiBpmnPluginToolWindowFactory: ToolWindowFactory {
         }
 
         // register the call graph tool window as a project service, so it can be accessed by editor menu actions.
-        val windowService = ServiceManager.getService(project, ActivitiBpmnPluginToolWindowProjectService::class.java)
+        val windowService = project.getService(ActivitiBpmnPluginToolWindowProjectService::class.java)
         windowService.bpmnToolWindow = bpmnWindow
 
         // register the tool window content
