@@ -81,7 +81,7 @@ This fork is not on the JetBrains Marketplace. Get a ZIP in one of three ways:
   (13.5 MB, Flowable only)
 
   ```
-  SHA-256  77fb7eb1e74d2dc9654cae2a4ab9009c5b60e85f5df60227d143d6aed0854af4
+  SHA-256  7ba2c27baaef5b048eaf29d62e8a0d6d81f6efa5f6e2422f533995c384042192
   ```
 
   Verify it with `sha256sum` (Linux/macOS) or
