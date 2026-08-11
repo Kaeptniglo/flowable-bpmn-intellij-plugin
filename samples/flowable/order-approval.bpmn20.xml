@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+    <process id="order-approval" name="Bestellfreigabe" isExecutable="true">
+        <documentation>Kleiner Beispielprozess zum manuellen Testen des Plugins: Start, User Task, XOR-Gateway mit zwei Bedingungen, Service Tasks und ein gemeinsames Endereignis.</documentation>
+
+        <startEvent id="orderReceived" name="Bestellung eingegangen" flowable:formFieldValidation="true"></startEvent>
+
+        <userTask id="checkOrder" name="Bestellung pruefen" flowable:assignee="${initiator}" flowable:formKey="orderCheckForm">
+            <documentation>Fachliche Pruefung der eingegangenen Bestellung.</documentation>
+        </userTask>
+
+        <exclusiveGateway id="amountGateway" name="Betrag &gt; 1000?"></exclusiveGateway>
+
+        <userTask id="managerApproval" name="Freigabe durch Leitung" flowable:candidateGroups="management">
+            <documentation>Ab 1000 EUR ist eine zusaetzliche Freigabe noetig.</documentation>
+        </userTask>
+
+        <serviceTask id="bookOrder" name="Bestellung buchen" flowable:delegateExpression="${bookOrderDelegate}">
+            <documentation>Delegate Expression - hier laesst sich der Sprung vom Diagramm in den Bean-Code testen.</documentation>
+        </serviceTask>
+
+        <serviceTask id="notifyCustomer" name="Kunde benachrichtigen" flowable:class="com.example.order.NotifyCustomerDelegate">
+            <documentation>Java-Klasse statt Expression - testet den Sprung in eine konkrete Klasse.</documentation>
+        </serviceTask>
+
+        <endEvent id="orderDone" name="Bestellung abgeschlossen"></endEvent>
+
+        <sequenceFlow id="flowStartToCheck" sourceRef="orderReceived" targetRef="checkOrder"></sequenceFlow>
+        <sequenceFlow id="flowCheckToGateway" sourceRef="checkOrder" targetRef="amountGateway"></sequenceFlow>
+        <sequenceFlow id="flowGatewayToApproval" name="ja" sourceRef="amountGateway" targetRef="managerApproval">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${amount > 1000}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flowGatewayToBook" name="nein" sourceRef="amountGateway" targetRef="bookOrder">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${amount <= 1000}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flowApprovalToBook" sourceRef="managerApproval" targetRef="bookOrder"></sequenceFlow>
+        <sequenceFlow id="flowBookToNotify" sourceRef="bookOrder" targetRef="notifyCustomer"></sequenceFlow>
+        <sequenceFlow id="flowNotifyToEnd" sourceRef="notifyCustomer" targetRef="orderDone"></sequenceFlow>
+    </process>
+
+    <bpmndi:BPMNDiagram id="BPMNDiagram_order-approval">
+        <bpmndi:BPMNPlane bpmnElement="order-approval" id="BPMNPlane_order-approval">
+            <bpmndi:BPMNShape bpmnElement="orderReceived" id="BPMNShape_orderReceived">
+                <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="255.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="checkOrder" id="BPMNShape_checkOrder">
+                <omgdc:Bounds height="80.0" width="100.0" x="180.0" y="230.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="amountGateway" id="BPMNShape_amountGateway">
+                <omgdc:Bounds height="40.0" width="40.0" x="330.0" y="250.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="managerApproval" id="BPMNShape_managerApproval">
+                <omgdc:Bounds height="80.0" width="100.0" x="430.0" y="120.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="bookOrder" id="BPMNShape_bookOrder">
+                <omgdc:Bounds height="80.0" width="100.0" x="430.0" y="330.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="notifyCustomer" id="BPMNShape_notifyCustomer">
+                <omgdc:Bounds height="80.0" width="100.0" x="600.0" y="330.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="orderDone" id="BPMNShape_orderDone">
+                <omgdc:Bounds height="28.0" width="28.0" x="770.0" y="356.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+
+            <bpmndi:BPMNEdge bpmnElement="flowStartToCheck" id="BPMNEdge_flowStartToCheck">
+                <omgdi:waypoint x="130.0" y="270.0"></omgdi:waypoint>
+                <omgdi:waypoint x="180.0" y="270.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flowCheckToGateway" id="BPMNEdge_flowCheckToGateway">
+                <omgdi:waypoint x="280.0" y="270.0"></omgdi:waypoint>
+                <omgdi:waypoint x="330.0" y="270.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flowGatewayToApproval" id="BPMNEdge_flowGatewayToApproval">
+                <omgdi:waypoint x="350.0" y="250.0"></omgdi:waypoint>
+                <omgdi:waypoint x="350.0" y="160.0"></omgdi:waypoint>
+                <omgdi:waypoint x="430.0" y="160.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flowGatewayToBook" id="BPMNEdge_flowGatewayToBook">
+                <omgdi:waypoint x="350.0" y="290.0"></omgdi:waypoint>
+                <omgdi:waypoint x="350.0" y="370.0"></omgdi:waypoint>
+                <omgdi:waypoint x="430.0" y="370.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flowApprovalToBook" id="BPMNEdge_flowApprovalToBook">
+                <omgdi:waypoint x="530.0" y="160.0"></omgdi:waypoint>
+                <omgdi:waypoint x="565.0" y="160.0"></omgdi:waypoint>
+                <omgdi:waypoint x="565.0" y="300.0"></omgdi:waypoint>
+                <omgdi:waypoint x="480.0" y="300.0"></omgdi:waypoint>
+                <omgdi:waypoint x="480.0" y="330.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flowBookToNotify" id="BPMNEdge_flowBookToNotify">
+                <omgdi:waypoint x="530.0" y="370.0"></omgdi:waypoint>
+                <omgdi:waypoint x="600.0" y="370.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flowNotifyToEnd" id="BPMNEdge_flowNotifyToEnd">
+                <omgdi:waypoint x="700.0" y="370.0"></omgdi:waypoint>
+                <omgdi:waypoint x="770.0" y="370.0"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</definitions>
