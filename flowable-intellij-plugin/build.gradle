@@ -26,8 +26,12 @@ dependencies {
 
     implementation project(":xml-parser-core")
     implementation project(":flowable-xml-parser")
-    implementation project(":bpmn-intellij-plugin-core")
-    implementation project(":bpmn-intellij-plugin-commons")
+    // Since IntelliJ Platform Gradle Plugin 2.16 a plain 'implementation project(...)' on a
+    // module using 'org.jetbrains.intellij.platform.module' is packaged as a plugin model v2
+    // content module under lib/modules/, whose classes are not on the plugin classloader at
+    // runtime. pluginComposedModule merges them into the plugin Jar instead.
+    intellijPlatform.pluginComposedModule(implementation(project(":bpmn-intellij-plugin-core")))
+    intellijPlatform.pluginComposedModule(implementation(project(":bpmn-intellij-plugin-commons")))
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson"
