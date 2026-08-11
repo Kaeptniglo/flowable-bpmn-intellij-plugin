@@ -74,12 +74,24 @@ Key goals are: process editing integration into IntelliJ, code navigation suppor
 
 **NOTE: The plugin requires 'Ultimate Edition' of IntelliJ for code navigation**
 
-This fork is not on the JetBrains Marketplace. Get a ZIP in one of two ways:
+This fork is not on the JetBrains Marketplace. Get a ZIP in one of three ways:
+
+- **Download the prebuilt ZIP from this repository** — no JDK needed:
+  [`dist/flowable-bpmn-plugin-0.6.0-2026.2.zip`](dist/flowable-bpmn-plugin-0.6.0-2026.2.zip)
+  (13.5 MB, Flowable only)
+
+  ```
+  SHA-256  77fb7eb1e74d2dc9654cae2a4ab9009c5b60e85f5df60227d143d6aed0854af4
+  ```
+
+  Verify it with `sha256sum` (Linux/macOS) or
+  `Get-FileHash <file> -Algorithm SHA256` (Windows PowerShell).
 
 - **Build it yourself** — see [Building from sources](#building-from-sources) below.
+  Required for the Activiti and Camunda variants, which are not checked in.
 - **Download a CI build** — open the latest green run of the `Plugin CI`
   [workflow](https://github.com/Kaeptniglo/flowable-bpmn-intellij-plugin/actions) and grab
-  the `plugin-distributions` artifact.
+  the `plugin-distributions` artifact. This one contains all three plugins.
 
 Then install it:
 
@@ -135,6 +147,22 @@ To build only one of them, prefix the task with the module, e.g.
 `./gradlew clean :flowable-intellij-plugin:buildPlugin`.
 
 Install the result by following the steps under [Installation](#installation).
+
+### Refreshing the checked-in ZIP
+
+[`dist/`](dist) holds a prebuilt Flowable ZIP so colleagues without a JDK 25 can install
+the plugin without building it. It is **not** produced by the build and does not update
+itself — after changing plugin code, refresh it and update the checksum in this README:
+
+```shell script
+./gradlew :flowable-intellij-plugin:buildPlugin
+cp flowable-intellij-plugin/build/distributions/flowable-intellij-plugin.zip \
+   dist/flowable-bpmn-plugin-<version>.zip
+sha256sum dist/flowable-bpmn-plugin-<version>.zip
+```
+
+Keep in mind that every refresh adds another ~13.5 MB blob to the git history for good.
+If this starts to hurt, attach the ZIP to a GitHub release instead and link that here.
 
 ## Run in a sandbox IDE
 
