@@ -40,8 +40,8 @@ internal class BaseCanvasPopupMenuProviderTest {
             val mutatedShapeClass = shapeMutator.get(mutatedElement) as KClass<*>
 
             newShapeClass.simpleName!!.shouldBeEqualTo(mutatedShapeClass.simpleName!!)
-            newShapeClass.simpleName!!.toLowerCase().replace("bpmn", "")
-                .shouldBeEqualTo(prop.name.replace("_", "").toLowerCase())
+            newShapeClass.simpleName!!.lowercase().replace("bpmn", "")
+                .shouldBeEqualTo(prop.name.replace("_", "").lowercase())
         }
     }
 
