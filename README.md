@@ -1,9 +1,53 @@
-[![Build Status](https://github.com/valb3r/flowable-bpmn-intellij-plugin/workflows/Java%20CI/badge.svg)](https://github.com/valb3r/flowable-bpmn-intellij-plugin/actions)
-[![codecov](https://codecov.io/gh/valb3r/flowable-bpmn-intellij-plugin/branch/master/graph/badge.svg)](https://codecov.io/gh/valb3r/flowable-bpmn-intellij-plugin)
-[![Gitter](https://badges.gitter.im/flowable-bpmn-intellij-plugin/community.svg)](https://gitter.im/flowable-bpmn-intellij-plugin/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-[![Made in Ukraine](https://img.shields.io/badge/made_in-ukraine-ffd700.svg?labelColor=0057b7)](https://stand-with-ukraine.pp.ua)
+[![Build Status](https://github.com/Kaeptniglo/flowable-bpmn-intellij-plugin/workflows/Plugin%20CI/badge.svg)](https://github.com/Kaeptniglo/flowable-bpmn-intellij-plugin/actions)
 
 [![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://stand-with-ukraine.pp.ua)
+
+# About this fork
+
+This is a fork of [valb3r/flowable-bpmn-intellij-plugin](https://github.com/valb3r/flowable-bpmn-intellij-plugin)
+by Valentyn Berezin, updated to run on **IntelliJ IDEA 2026.2** (build 262).
+
+Upstream's last release (0.5.4.4) targets IntelliJ 2024.3 and does not install on 2026.2.
+This fork carries version **0.6.0-2026.2** so the two builds are easy to tell apart in the
+plugin list. It is **not** published on the JetBrains Marketplace — build it yourself as
+described under [Building from sources](#building-from-sources).
+
+### What changed relative to upstream
+
+| | upstream 0.5.4.4 | this fork |
+|---|---|---|
+| Target IntelliJ Platform | 2024.3.5 | 2026.2.1 |
+| `since-build` | 233 | 262 |
+| Java | 17 | **25** |
+| Gradle | 8.12 | 9.7.0 |
+| Kotlin | 2.1.0 | 2.4.10 |
+| IntelliJ Platform Gradle Plugin | 2.4.0 | 2.18.1 |
+
+IntelliJ 2026.2 ships class files with major version 69, so the plugin has to be compiled
+with **JDK 25**; JDK 17 or 21 will not work. The IDE bundles Kotlin 2.4, which is why the
+Kotlin `apiVersion` is pinned to 2.2.
+
+Source changes were limited to APIs that were removed or repackaged:
+`ServiceManager` was replaced by `project.getService()` /
+`ApplicationManager.getApplication().getService()`, `StartupActivity.Background` by
+`ProjectActivity`, and `groovy.lang.Tuple2` by `kotlin.Pair` (Groovy is no longer on the
+plugin classpath). Feature behaviour is unchanged.
+
+### Status
+
+The plugin builds, passes the test suite and the IntelliJ Plugin Verifier reports
+`Compatible` against IU-262.9437.185. It loads and opens diagrams in IntelliJ 2026.2.1.
+The deeper features (editing, undo/redo, code navigation, process debugging) have had
+little manual testing on 2026.2 so far — the automated tests mostly cover the XML parsers,
+not the UI. Please report anything that misbehaves.
+
+### License and attribution
+
+MIT, unchanged from upstream. Copyright remains with Valentyn Berezin for the original
+work; see [LICENSE](LICENSE). The license file is bundled into every plugin Jar under
+`META-INF/LICENSE`.
+
+---
 
 # What is this
 
@@ -17,13 +61,6 @@ Key goals are: process editing integration into IntelliJ, code navigation suppor
 **Currently, it is work-in-progress.**
 
 
-# Questions and propositions
-
-Don't hesitate - ask or tell your opinion in gitter:
-
-[![Gitter](https://badges.gitter.im/flowable-bpmn-intellij-plugin/community.svg)](https://gitter.im/flowable-bpmn-intellij-plugin/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-
-
 # Key features
 
 1. BPMN process editing (BPMN modeler) - adding/removing elements, changing their properties, undo/redo, bulk drag-n-drop, bulk removal of elements
@@ -35,53 +72,73 @@ Don't hesitate - ask or tell your opinion in gitter:
 
 # Installation
 
-You can install the plugin from JetBrains plugin repository (just search for 
-[`Flowable BPMN visualizer`](https://plugins.jetbrains.com/plugin/14318-flowable-bpmn-visualizer) 
-or [`Activiti BPMN visualizer`](https://plugins.jetbrains.com/plugin/15222-activiti-bpmn-visualizer) 
-or [`Camunda BPMN visualizer`](https://plugins.jetbrains.com/plugin/17844-camunda-bpmn-visualizer) depending on engine you need
-) like any other plugin.
-
-**Bleeding edge**:
-You can install the latest build of the plugin from ZIP file provided at releases page of this repository 
-or from alpha-channel of JetBrains plugin repository.
-
-## From GitHub releases
-
-Install the latest plugin version plugin from the releases page:
-[Releases page](https://github.com/valb3r/flowable-bpmn-intellij-plugin/releases/)
-
 **NOTE: The plugin requires 'Ultimate Edition' of IntelliJ for code navigation**
 
-Installation guideline video:
+This fork is not on the JetBrains Marketplace. Get a ZIP in one of two ways:
 
-[![Install plugin](https://img.youtube.com/vi/tfSAEMSIrqA/0.jpg)](https://www.youtube.com/watch?v=tfSAEMSIrqA)
+- **Build it yourself** — see [Building from sources](#building-from-sources) below.
+- **Download a CI build** — open the latest green run of the `Plugin CI`
+  [workflow](https://github.com/Kaeptniglo/flowable-bpmn-intellij-plugin/actions) and grab
+  the `plugin-distributions` artifact.
 
-
-## From IntelliJ plugins alpha-channel repository
+Then install it:
 
 1. Open `File -> Settings -> Plugins`
-1. In opened window, click on `Gear` button (Manage plugins, repositories) -> `Manage Plugin Repositories`
-1. Add Alpha releases channel - `https://plugins.jetbrains.com/plugins/alpha/list` to repositories list
-1. Now you are able to list and install `Flowable bpmn visualizer` plugin directly from plugin search window
+1. Click the gear icon -> `Install Plugin from Disk...`
+1. Select the ZIP and restart the IDE
 
-IntelliJ docs on this topic:
+If a previous build of the plugin is already installed, **uninstall it first**. Installing
+over an existing copy can leave stale jars behind in the plugin directory.
 
-[How to configure and use alpha channel](https://plugins.jetbrains.com/docs/marketplace/custom-release-channels.html#CustomReleaseChannels-ConfiguringaCustomChannelinIntelliJPlatformBasedIDEs)
+> The Marketplace entries for
+> [`Flowable BPMN visualizer`](https://plugins.jetbrains.com/plugin/14318-flowable-bpmn-visualizer),
+> [`Activiti BPMN visualizer`](https://plugins.jetbrains.com/plugin/15222-activiti-bpmn-visualizer)
+> and [`Camunda BPMN visualizer`](https://plugins.jetbrains.com/plugin/17844-camunda-bpmn-visualizer)
+> serve the **upstream** plugin, which does not support IntelliJ 2026.2. Do not install
+> both at the same time.
 
 
 # Building from sources
 
-If you want to build plugin directly from sources (i.e. from `master` branch `HEAD` for bugfixes), simply execute 
-in project root this command:
+## Prerequisites
+
+- **JDK 25** — required. IntelliJ 2026.2 class files are Java 25, so JDK 17 or 21 fail to
+  compile against the platform.
+- Nothing else. The Gradle wrapper fetches Gradle 9.7.0, and the build downloads the
+  IntelliJ IDEA Ultimate distribution it compiles against (a few GB on the first run).
+
+Point Gradle at your JDK 25 by setting `JAVA_HOME`, for example:
+
+```shell script
+export JAVA_HOME=/path/to/jdk-25          # Linux / macOS
+$env:JAVA_HOME = "C:\Program Files\Amazon Corretto\jdk25.0.4_7"   # Windows PowerShell
+```
+
+Opening the project in IntelliJ: set **Settings -> Build, Execution, Deployment -> Build
+Tools -> Gradle -> Gradle JVM** to JDK 25.
+
+## Build
 
 ```shell script
 ./gradlew clean buildPlugin
 ```
 
-It will create `flowable-intellij-plugin/build/distributions/bpmn-intellij-plugin.zip` file that contains plugin distributive.
-You can install it by following steps [here](#from-github-releases).
+This builds all three plugins. The distributions are written to:
 
-If you want just to run the plugin in the `sandbox` you can execute
+| Engine | ZIP |
+|---|---|
+| Flowable | `flowable-intellij-plugin/build/distributions/flowable-intellij-plugin.zip` |
+| Activiti | `activiti-intellij-plugin/build/distributions/activiti-intellij-plugin.zip` |
+| Camunda  | `camunda-intellij-plugin/build/distributions/camunda-intellij-plugin.zip` |
+
+To build only one of them, prefix the task with the module, e.g.
+`./gradlew clean :flowable-intellij-plugin:buildPlugin`.
+
+Install the result by following the steps under [Installation](#installation).
+
+## Run in a sandbox IDE
+
+To try the plugin without installing it into your own IDE:
 
 **Flowable:**
 
@@ -101,11 +158,27 @@ If you want just to run the plugin in the `sandbox` you can execute
 ./gradlew clean :camunda-intellij-plugin:runIde
 ```
 
-# Workflow
+## Tests and compatibility check
 
+```shell script
+./gradlew test
+./gradlew :flowable-intellij-plugin:verifyPlugin
+```
+
+`verifyPlugin` runs the official IntelliJ Plugin Verifier against the target IDE build and
+takes a couple of minutes.
+
+## Sample BPMN files
+
+[`samples/`](samples) holds a handful of ready-to-open BPMN files with diagram coordinates,
+including a small hand-written one to start with. See [samples/README.md](samples/README.md).
+
+
+# Workflow
 
 ## Plugin usage:
 
+The videos below were recorded against the upstream plugin; the UI is unchanged.
 
 ### Basic usage
 
@@ -150,13 +223,14 @@ In the field **Supported extensions** add `bpmn`, so that field value is `bpmn20
 [Animation to configure plugin for opening files with custom extension](docs/img/faq/how-to-open-bpmn.gif)
 
 
-### Q: Some feature/bug was closed, but I can't find new release.
+### Q: Where do I report a problem?
 
-**A**: Check [this link](https://github.com/valb3r/flowable-bpmn-intellij-plugin/projects/1) for the status of your feature. 
-If it is in 'Done' (or Closed) column this doesn't mean it is released - it must proceed to next columns to appear in 
-any kind of release-artifact. After a feature is 'Closed' it will wait for GitHub release 
-at [Releases](https://github.com/valb3r/flowable-bpmn-intellij-plugin/releases) page and after that it will be 
-published to JetBrains marketplace. It can take up to two days for plugin to be available on JetBrains marketplace.
+**A**: For anything specific to IntelliJ 2026.2 support, use this fork's
+[issue tracker](https://github.com/Kaeptniglo/flowable-bpmn-intellij-plugin/issues).
+For questions about the plugin's features in general, the
+[upstream project](https://github.com/valb3r/flowable-bpmn-intellij-plugin) and its
+[Gitter channel](https://gitter.im/flowable-bpmn-intellij-plugin/community) are the better
+place.
 
 
 # Technical details

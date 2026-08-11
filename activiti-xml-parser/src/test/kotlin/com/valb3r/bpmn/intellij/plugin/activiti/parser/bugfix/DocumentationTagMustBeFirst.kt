@@ -25,7 +25,11 @@ class DocumentationTagMustBeFirst {
 
         val procIndex = updated.indexOf(processTag)
         val docIndex = updated.indexOf("<documentation>Some docs</documentation>")
-        docIndex.shouldBeEqualTo(procIndex + processTag.length + System.lineSeparator().length)
+        // The XML writer emits '\n' regardless of platform, so asserting against
+        // System.lineSeparator() fails on Windows. Assert the actual intent instead:
+        // nothing but whitespace between the process tag and the documentation tag.
+        (docIndex > procIndex).shouldBeEqualTo(true)
+        updated.substring(procIndex + processTag.length, docIndex).isBlank().shouldBeEqualTo(true)
     }
 
     @Test
@@ -37,6 +41,10 @@ class DocumentationTagMustBeFirst {
 
         val procIndex = updated.indexOf(processTag)
         val docIndex = updated.indexOf("<documentation>Some docs</documentation>")
-        docIndex.shouldBeEqualTo(procIndex + processTag.length + System.lineSeparator().length)
+        // The XML writer emits '\n' regardless of platform, so asserting against
+        // System.lineSeparator() fails on Windows. Assert the actual intent instead:
+        // nothing but whitespace between the process tag and the documentation tag.
+        (docIndex > procIndex).shouldBeEqualTo(true)
+        updated.substring(procIndex + processTag.length, docIndex).isBlank().shouldBeEqualTo(true)
     }
 }

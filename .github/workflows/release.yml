@@ -1,9 +1,21 @@
-name: Plugin release
+# Publishing to the JetBrains Marketplace is DISABLED in this fork.
+#
+# The plugin IDs in this repository (flowable-bpmn-visualizer, activiti-bpmn-visualizer,
+# camunda-bpmn-visualizer) belong to the upstream project by Valentyn Berezin. Publishing
+# this fork under them is not possible, and doing so would require registering separate
+# plugin IDs first.
+#
+# The trigger is therefore workflow_dispatch only: it no longer fires automatically on
+# 'v*' tags. Do not enable the tag trigger before the plugin IDs have been changed and an
+# INTELLIJ_PLUGIN_PUBLISH_TOKEN for your own Marketplace account is configured.
+#
+# To build a distributable ZIP without publishing, use the Plugin CI workflow, which
+# uploads the plugin distributions as a build artifact.
+
+name: Plugin release (disabled in fork)
 
 on:
-  push:
-    tags:
-      - v*
+  workflow_dispatch:
 
 jobs:
   build:
@@ -11,32 +23,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
-          ref: master
           fetch-depth: 0
-      - name: Exit if not on master branch
-        run: |
-          if [ $(git --no-pager branch --format='%(refname:short)' --contains $(git rev-parse "$TAG_NAME") | grep -E '^master$') ]; then
-              echo "Releasing $TAG_NAME"
-          else
-              echo "Tag $TAG_NAME is not on master branch"
-              exit -1
-          fi
-        env:
-          TAG_NAME: ${{ github.ref_name }}
-      - name: Set up JDK 17
-        uses: actions/setup-java@v1
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
         with:
-          java-version: 17
+          distribution: temurin
+          java-version: 25
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build, test with Gradle
-        run: |
-          ./gradlew clean build buildPlugin runPluginVerifier jacocoTestReport \
-            -x :bpmn-intellij-plugin-commons:runPluginVerifier \
-            -x :bpmn-intellij-plugin-core:runPluginVerifier
-      - name: Release plugin(s)
-        run: ./gradlew publishPlugin
-        env:
-          INTELLIJ_PLUGIN_PUBLISH_TOKEN: ${{ secrets.INTELLIJ_PLUGIN_PUBLISH_TOKEN }}
+        run: ./gradlew clean build buildPlugin verifyPlugin jacocoTestReport
+      - name: Upload plugin distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-distributions
+          path: '*-intellij-plugin/build/distributions/*.zip'
+          if-no-files-found: error

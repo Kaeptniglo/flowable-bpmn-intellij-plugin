@@ -8,11 +8,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 17
-      uses: actions/setup-java@v1
+    - uses: actions/checkout@v4
+    - name: Set up JDK 25
+      uses: actions/setup-java@v4
       with:
-        java-version: 17
+        distribution: temurin
+        java-version: 25
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
@@ -21,9 +24,9 @@ jobs:
             :flowable-intellij-plugin:buildPlugin :flowable-intellij-plugin:verifyPlugin \
             :camunda-intellij-plugin:buildPlugin :camunda-intellij-plugin:verifyPlugin \
             :activiti-intellij-plugin:buildPlugin :activiti-intellij-plugin:verifyPlugin
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+    - name: Upload plugin distributions
+      uses: actions/upload-artifact@v4
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        flags: unittests
-        fail_ci_if_error: false # Observing frequent failures of code coverage uploads
+        name: plugin-distributions
+        path: '*-intellij-plugin/build/distributions/*.zip'
+        if-no-files-found: error
