@@ -50,9 +50,18 @@ sourceSets {
     main.kotlin.srcDirs += 'src/main/kotlin'
 }
 
+// The MIT license requires the copyright and permission notice to travel with every
+// copy, so ship it inside the plugin Jar rather than only in the repository.
+processResources {
+    from(rootProject.file('LICENSE')) {
+        into 'META-INF'
+    }
+}
+
 intellijPlatform {
     pluginConfiguration {
         name = 'flowable-bpmn-plugin'
+        version = pluginVersion
     }
 
     publishing {

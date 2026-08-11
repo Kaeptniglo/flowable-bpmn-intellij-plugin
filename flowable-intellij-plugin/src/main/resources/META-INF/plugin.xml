@@ -4,7 +4,7 @@
     <name>Flowable BPMN visualizer</name>
 
     <!-- Plugin version -->
-    <version>0.5.4.4</version>
+    <version>0.6.0-2026.2</version>
 
     <!-- Unique identifier of the plugin. Cannot be changed between the plugin versions.
          If not specified, assumed to be equal to <name>. -->
@@ -83,7 +83,7 @@
 
     <!-- The vendor of the plugin. The optional "url" attribute specifies the URL of the vendor homepage.
          The optional "email" attribute specifies the e-mail address of the vendor.-->
-    <vendor url="https://github.com/valb3r/flowable-bpmn-intellij-plugin" email="vbe@golden-dimension.com">Valentyn Berezin</vendor>
+    <vendor url="https://github.com/Kaeptniglo/flowable-bpmn-intellij-plugin">Valentyn Berezin (Original), Thomas Welspacher (Fork für IntelliJ 2026.2)</vendor>
 
     <!-- The unique identifiers of the plugins on which this plugin depends. -->
     <depends>com.intellij.modules.lang</depends>

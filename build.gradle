@@ -16,6 +16,7 @@ ext {
     // IntelliJ 2026.2 (build 262) ships class files with major version 69, i.e. Java 25
     javaVersion = 25
     sinceBuildVersion = '262'
+    pluginVersion = '0.6.0-2026.2' // Fork version, deliberately above upstream 0.5.4.4 to tell the builds apart
 
     kotlinStdlib = '2.4.10'
     kotlinApiVersion = '2.2' // It must not exceed the JB supplied Kotlin STDLIB, which is 2.4 for 2026.2. See https://youtrack.jetbrains.com/issue/KT-37435
